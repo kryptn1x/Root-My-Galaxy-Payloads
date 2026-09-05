@@ -26,6 +26,8 @@ between KMIs.
 | `ksud-samsung-android14-6.1-kdp` | Same verified 6.1 targets | `android14-6.1` | Late-load binary embedding the 6.1 module |
 | `android12-5.10_kernelsu-samsung-kdp.ko` | `SM-A155N` `A155NKSS6BYH1` | `android12-5.10` | Standalone Samsung KDP/RKP/DEFEX module built against the exact A15 kernel |
 | `ksud-samsung-android12-5.10-kdp` | `SM-A155N` `A155NKSS6BYH1` | `android12-5.10` | Late-load binary embedding the 5.10 module |
+| `android12-5.10_kernelsu-A256EXXSADZA2-kdp.ko` | `SM-A256E`, `A256EXXSADZA2` | `android12-5.10` | Exact A25 module with target `vermagic`, Samsung KDP/RKP/DEFEX no-patch-text no-LTO build, audited for manual relocation |
+| `ksud-A256EXXSADZA2-kdp` | Same exact A25 build | `android12-5.10` | Device-tested late-load binary embedding the exact A25 module |
 
 The standalone `.ko` files are retained for auditing. Root My Galaxy downloads
 the corresponding `ksud-*` file because `ksud late-load` loads its embedded
@@ -50,7 +52,14 @@ KernelSU version code `32525` for manager compatibility. The A36 AYG1 pair
 uses the same fail-closed Samsung path, reports the exact A36 kernel release,
 passes the recovered-target symbol audit, and was loaded on hardware with
 KernelSU Manager reporting `Working <LKM> [Jailbreak mode]` and version
-`32525-2`. The 5.10 files are also build-verified and device-untested.
+`32525-2`. The A256E DZA2 pair is device-tested: built with the exact
+`5.10.237-android12-9-31999025-abA256EXXSADZA2` release, this 5.10 kernel uses
+THIN-LTO so the module was built with `CONFIG_LTO_NONE` + CFI disabled (the
+stock LTO layout panics on load, same as the F9360 target). `ksud late-load`
+returned `0` and verified KernelSU control through the driver fd; `/proc/modules`
+reports `kernelsu ... Live`; SELinux was restored to enforcing by KernelSU init.
+All 202 undefined symbols were present in the recovered A256EXXSADZA2 vmlinux,
+with a zero-length `__versions` section and zero CRC mismatches.
 
 ## Why the stock module crashes on Samsung
 

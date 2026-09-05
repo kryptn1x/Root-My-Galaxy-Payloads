@@ -1,9 +1,15 @@
 #ifndef OFFSET_H
 #define OFFSET_H
 
+/*
+ * The A25 app-domain physical-P0 route needs an order-3 pipe/ASMEM kernel-read
+ * fd established before the P0 slide oracle, which the socket-interleave
+ * profile cannot provide.  Device-tested path is the standalone LD_PRELOAD
+ * route (slide leak via tracefs) + KernelSU late-load.  Keep APP_PAYLOAD
+ * gated until the app-domain route is validated, matching the ZE6 profile.
+ */
 #if defined(APP_PAYLOAD) && APP_PAYLOAD
-#define BUILD_VARIANT_LABEL "a25x-A256EXXSADZA2-app-physical-p0-oracle"
-#define APP_PHYS_P0_ORACLE 1
+#error "SM-A256E A256EXXSADZA2 app payload is not validated; use the standalone build"
 #else
 #define BUILD_VARIANT_LABEL "a25x-A256EXXSADZA2-root-umh-pi-safe"
 #endif
