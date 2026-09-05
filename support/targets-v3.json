@@ -2,6 +2,24 @@
   "schemaVersion": 3,
   "payloads": [
     {
+      "payloadId": "a25x-A256EXXSADZA2",
+      "displayName": "Galaxy A25 5G | Kernel 5.10.237",
+      "models": [
+        "SM-A256E"
+      ],
+      "kernelVersions": [
+        "5.10.237"
+      ],
+      "exploit": {
+        "url": "https://raw.githubusercontent.com/kryptn1x/Root-My-Galaxy-Payloads/main/artifacts/a25x-A256EXXSADZA2/cve-2026-43499-app.so",
+        "size": 104128
+      },
+      "kernelsu": {
+        "url": "https://raw.githubusercontent.com/kryptn1x/Root-My-Galaxy-Payloads/main/kernelsu/ksud-A256EXXSADZA2-kdp",
+        "size": 4760272
+      }
+    },
+    {
       "payloadId": "galaxy-s25-series-2026-06-07",
       "displayName": "Galaxy S25 series | Kernel 6.6.98",
       "models": [

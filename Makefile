@@ -34,6 +34,22 @@ APP_PRELOAD_SRCS := \
   src/root.c \
   src/preload.c
 
+# SM-A256E app payload: the app-domain physical-P0 oracle needs a kernel-read
+# fd that only exists after the CFI stage, so the socket-interleave reclaim
+# cannot shape the P0-oracle page before slide discovery.  Use the device-tested
+# standalone tracefs slide route instead (run via Shizuku's shell bridge); the
+# app build then follows the identical proven pselect/CFI/root path.
+ifeq ($(TARGET),a25x-A256EXXSADZA2)
+APP_PRELOAD_SRCS := \
+  src/main.c \
+  src/util.c \
+  src/slide.c \
+  src/fops.c \
+  src/pipe.c \
+  src/root.c \
+  src/preload.c
+endif
+
 COMMON_CFLAGS := \
   -O2 -g0 -Wall -Wextra \
   -Wno-unused-parameter -Wno-sign-compare \

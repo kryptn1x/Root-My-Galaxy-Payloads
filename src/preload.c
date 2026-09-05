@@ -98,6 +98,9 @@ static int attempt_delay_usec(int base_delay, int attempt) {
 
 static void wait_for_boot_quiet_window(void) {
 #if defined(APP_PAYLOAD) && APP_PAYLOAD
+  if (getenv("RMG_NO_QUIET")) {
+    return;
+  }
   struct timespec uptime;
   SYSCHK(clock_gettime(CLOCK_BOOTTIME, &uptime));
   if (uptime.tv_sec < APP_MIN_BOOT_UPTIME_SEC) {

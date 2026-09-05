@@ -13,16 +13,17 @@ step below.
 ## Validation status
 
 - Standalone transient root: device-tested, repeated success.
-- KernelSU late-load: device-tested, module loaded and `kcsu` control verified.
-- App payload: not validated and disabled at compile time (same as the ZE6
-  profile; the app-domain physical-P0 route needs the order-3 pipe kernel-read
-  fd before slide discovery, which the socket-interleave profile cannot
-  provide).
+- KernelSU late-load: device-tested, module loaded and `verify_kernelsu_control` passed.
+- App payload: built from the identical standalone tracefs route. The RMG app
+  runs it under its Shizuku shell bridge, which provides the tracefs access the
+  route requires (same as the `dm2q-S916BXXSAFZG1` shell-only profile). The
+  app-domain physical-P0 route needs a kernel-read fd that only exists after the
+  CFI stage, so the socket-interleave profile cannot serve it; the tracefs route
+  is the supported app path on this A25.
 
 The successful standalone runs reached UID 0 in `u:r:kernel:s0`. The exploit
 is probabilistic (one attempt per boot); a successful run leaves SELinux
-permissive until reboot. Two full runs were captured on the same device over
-separate boots.
+permissive until reboot.
 
 ## KernelSU
 
@@ -106,7 +107,14 @@ was re-verified by disassembling this firmware's `mm_cache_init`,
 
 ```sh
 make TARGET=a25x-A256EXXSADZA2 \
-  ANDROID_NDK_HOME=/path/to/android-ndk-r29 standalone
+  ANDROID_NDK_HOME=/path/to/android-ndk-r29 standalone      # standalone chain
+make TARGET=a25x-A256EXXSADZA2 \
+  ANDROID_NDK_HOME=/path/to/android-ndk-r29 all             # + app payload .so
 ```
+
+The app `.so` (`artifacts/a25x-A256EXXSADZA2/cve-2026-43499-app.so`) and the
+KernelSU late-load binary (`kernelsu/ksud-A256EXXSADZA2-kdp`) are referenced by
+the support feed entry `a25x-A256EXXSADZA2` (models `SM-A256E`, kernel
+`5.10.237`). Use the app's Shizuku mode when installing.
 
 Use only on a device you own or are explicitly authorized to test.
