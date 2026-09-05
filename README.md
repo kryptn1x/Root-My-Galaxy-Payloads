@@ -22,7 +22,7 @@ It intentionally does not contain Android application source code.
 | `a36xq-A366WVLS3AYG1` | Galaxy A36 5G `SM-A366W` | `6.6.46` | Device-tested |
 | `dm3q-S9180ZHS8FZF5` | Galaxy S23 Ultra `SM-S9180` | `5.15.189` | Test in progress |
 | `a25x-A256EXXUCEZE6` | Galaxy A25 5G `SM-A256E` | `5.10.240` | Device-tested standalone; app integration pending |
-| `a25x-A256EXXSADZA2` | Galaxy A25 5G `SM-A256E` | `5.10.237` | Device-tested standalone + KernelSU; app payload via Shizuku |
+| `a25x-A256EXXSADZA2` | Galaxy A25 5G `SM-A256E` | `5.10.237` | Device-tested standalone + KernelSU + app payload via Shizuku |
 
 Schema version 3 keeps each exploit and KernelSU artifact once. Its flat
 `models` and `kernelVersions` arrays define runtime compatibility. See

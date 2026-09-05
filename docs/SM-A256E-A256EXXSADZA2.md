@@ -14,15 +14,20 @@ step below.
 
 - Standalone transient root: device-tested, repeated success.
 - KernelSU late-load: device-tested, module loaded and `verify_kernelsu_control` passed.
-- App payload: built from the identical standalone tracefs route. The RMG app
+- App payload: built from the exact device-tested standalone chain. The RMG app
   runs it under its Shizuku shell bridge, which provides the tracefs access the
-  route requires (same as the `dm2q-S916BXXSAFZG1` shell-only profile). The
-  app-domain physical-P0 route needs a kernel-read fd that only exists after the
-  CFI stage, so the socket-interleave profile cannot serve it; the tracefs route
-  is the supported app path on this A25.
+  route requires (same as the `dm2q-S916BXXSAFZG1` shell-only profile). The app
+  `.so` is compiled **without `-DAPP_PAYLOAD`**: the app-flagged build panics
+  the pselect PI route on this firmware, while the byte-identical standalone
+  build never panics. `ROOT_UMH_PATH` in `target.h` points at the helper the
+  app stages (`/data/local/tmp/ksu-helper`), so the payload executes the app's
+  own `libcve43499root.so` for the `--umh` root step.
 
-The successful standalone runs reached UID 0 in `u:r:kernel:s0`. The exploit
-is probabilistic (one attempt per boot); a successful run leaves SELinux
+The successful standalone runs reached UID 0 in `u:r:kernel:s0`. A full
+app-path run (payload `.so` + staged helper via `--run-payload`, Shizuku
+equivalent) reached `done=1 root=1`, `uid=2000->0`, and left the root socket
+working. The exploit is probabilistic (one attempt per boot); a successful
+run leaves SELinux
 permissive until reboot.
 
 ## KernelSU

