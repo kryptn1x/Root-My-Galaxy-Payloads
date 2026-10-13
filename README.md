@@ -71,6 +71,8 @@ make TARGET=essi-S721NKSSCDZF3 ANDROID_NDK_HOME=/path/to/android-ndk release
 The complete firmware-to-profile procedure is recorded in
 [`docs/PORTING.md`](docs/PORTING.md). Samsung-specific KernelSU changes and
 versioned artifacts are documented in [`kernelsu/README.md`](kernelsu/README.md).
+The KernelSU-Next late-load port for the A25 (`SM-A256E`) is documented in
+[`kernelsu-next/README.md`](kernelsu-next/README.md).
 The exact S921B DZF2 analysis is recorded separately in
 [`docs/SM-S921B-S921BXXSFDZF2.md`](docs/SM-S921B-S921BXXSFDZF2.md), and the
 S928U/S928U1 DZF2 analysis is in
